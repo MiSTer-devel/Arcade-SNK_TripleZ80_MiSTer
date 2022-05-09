@@ -15,7 +15,7 @@ While it is in this development process, it will be appreciated that parallel de
 * Based on Tim Rudy 7400 TTL library [https://github.com/TimRudy/ice-chips-verilog](https://github.com/TimRudy/ice-chips-verilog).
 ## Instructions ASO/Alpha Mission/Arian Mission:
 In a game of two players who play in alternating turns. 
-You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start1,Start2, Coin and Service mode. In MiSTer you have an additional button to pause the game.
+You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start1,Start2, Coin and Service mode. In MiSTer you have an additional button to pause the game (do not implemented yet).
 For enter in service mode you must hold pressed the service mode button while you reset the core. Not keyboard controls implemented yet.
 
 ## Manual installation:
