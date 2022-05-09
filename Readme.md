@@ -18,13 +18,13 @@ In a game of two players who play in alternating turns.
 You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start1,Start2, Coin and Service mode. In MiSTer you have an additional button to pause the game (do not implemented yet).
 For enter in service mode you must hold pressed the service mode button while you reset the core. Not keyboard controls implemented yet.
 
-## Manual installation:
+## Manual installation
 Rename the .rbf file to SNK/_TripleZ80/_20220509.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
 
 The rest of the required ROM files follow the MAME naming conventions (check inside MRA for this). Is the user responsability to be installed in the following folder:
 /_Arcade/mame/<mame rom>.zip
 
-## Acknowledgments:
+## Acknowledgments
 * __@caiusarcade__ for their assistance in using files and converting PLD files.
 * __@topapate__ for general advice with the JTOPL core.
 * __@FCochise__ for helping with the rom settings of MRA files.
