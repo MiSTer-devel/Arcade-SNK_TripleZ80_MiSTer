@@ -22,7 +22,7 @@ For enter in service mode you must hold pressed the service mode button while yo
 Rename the .rbf file to SNK_TripleZ80_20220509.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
 
 The required ROM files follow the MAME naming conventions (check inside MRA for this). Is the user responsability to be installed in the following folder:
-/_Arcade/mame/<mame rom>.zip
+/media/fat/_Arcade/mame/<mame rom>.zip
 
 ## Acknowledgments
 * __@caiusarcade__ for their assistance in using files and converting PLD files.
