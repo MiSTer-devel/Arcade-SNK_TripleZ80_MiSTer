@@ -19,7 +19,7 @@ You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start
 For enter in service mode you must hold pressed the service mode button while you reset the core. Not keyboard controls implemented yet.
 
 ## Manual installation
-Rename the .rbf file to SNK_TripleZ80_20220509.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
+Rename the Arcade-SNK_TripleZ80_20220509.rbf file to SNK_TripleZ80_20220509.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
 
 The required ROM files follow the MAME naming conventions (check inside MRA for this). Is the user responsability to be installed in the following folder:
 /media/fat/_Arcade/mame/<mame rom>.zip

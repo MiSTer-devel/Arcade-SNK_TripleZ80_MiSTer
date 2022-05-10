@@ -207,7 +207,7 @@ assign VIDEO_ARY = (!ar) ? (orientation  ? 8'd3 : 8'd4) : 12'd0;
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-//     XXX XXXX  XX
+//     XXX XXXX  XXXXX
 `include "build_id.v" 
 localparam CONF_STR = {
 	"Alpha Mission;;",
@@ -224,6 +224,9 @@ localparam CONF_STR = {
 	"P2-;",
 	"P2OE,VGA Scaler,Off,On;",
 	"P2OF,Flip,Off,On;",
+	"P2OG,Side Layer,On,Off;",
+	"P2OH,Back Layer,On,Off;",
+	"P2OI,Front Layer,On,Off;",
 	"P2-;",
 	"DIP;",
 	"-;",
@@ -244,6 +247,13 @@ wire  [7:0] ioctl_din;
 wire  [7:0] ioctl_index;
 wire        ioctl_wait;
 wire        rom_download = ioctl_download && (ioctl_index  == 0);
+reg   [2:0] layer_ena_dbg = 3'b111;
+always @(posedge clk_53p6) begin
+	layer_ena_dbg[0] <= ~status[16];
+	layer_ena_dbg[1] <= ~status[17];
+	layer_ena_dbg[2] <= ~status[18];
+end
+
 
 //wire forced_scandoubler;
 
@@ -345,6 +355,7 @@ SNK_TripleZ80 snk_TZ80_ASO
 	.ioctl_addr(ioctl_addr[24:0]),
 	.ioctl_wr(ioctl_wr && rom_download),
 	.ioctl_data(ioctl_dout),
+	.layer_ena_dbg(layer_ena_dbg),
 	//output
 	.R(R),
 	.G(G),

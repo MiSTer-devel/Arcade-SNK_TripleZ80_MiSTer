@@ -19,6 +19,9 @@ module SNK_TripleZ80
 	input wire         [24:0] ioctl_addr,
 	input wire         [7:0] ioctl_data,
 	input wire               ioctl_wr,
+
+    //layer dbg interfacee
+    input wire [2:0] layer_ena_dbg, //0x4 Front layer enabled, 0x2 Back1 layer enabled, 0x1 Side layer enabled
     //output video signals
     output logic [3:0] R,
     output logic [3:0] G,
@@ -497,6 +500,9 @@ AlphaMissionCore_Clocks_Sync amc_clocks_sync(
         .ioctl_addr(ioctl_addr[19:0]),
         .ioctl_wr(ioctl_wr),
         .ioctl_data(ioctl_data),
+
+        //dbg layer en/disable interface
+        .layer_ena_dbg(layer_ena_dbg),
         //Graphics layers
         .LD(LD_BUF), //Line buffer
         //.LD(8'hff), //bypass

@@ -17,6 +17,7 @@ module AlphaMissionCore_FinalVideo_sync(
     input wire         [7:0] ioctl_data,
     input wire               ioctl_wr,
     //Graphics layers
+    input wire [2:0] layer_ena_dbg, //dbg interface to enable/disable layers
     input wire [7:0] LD, //Line buffer
     input wire [6:0] SD, //Side layer
     input wire [7:0] B1D, //Background layer
@@ -41,15 +42,20 @@ module AlphaMissionCore_FinalVideo_sync(
     );
 
     logic A9, A10, A14;
-    assign A9 = ~( A8_1_Qn & SD[0]);
+    logic [6:0] SD_ena;
+    assign SD_ena = (layer_ena_dbg[0]) ? SD : 7'h7f;
+
+    assign A9 = ~( A8_1_Qn & SD_ena[0]);
     assign A10 = ~A9;
-    assign A14 = ~(A10 & SD[3] & SD[2] & SD[1]);
+    assign A14 = ~(A10 & SD_ena[3] & SD_ena[2] & SD_ena[1]);
 
     logic [7:0] SLD;
     logic [7:0] SLBD;
 
-    ttl_74298_sync e9 (.VIDEO_RSTn(VIDEO_RSTn), .clk(clk), .Cen(CK1n), .WS(A14), .A(LD[3:0]), .B(SD[3:0]), .Q(SLD[3:0]));
-    ttl_74298_sync e10  (.VIDEO_RSTn(VIDEO_RSTn), .clk(clk), .Cen(CK1n), .WS(A14), .A(LD[7:4]), .B({1'b0,SD[6:4]}), .Q(SLD[7:4]));
+    logic [7:0] ld_ena;
+    assign ld_ena = (layer_ena_dbg[2]) ? LD : 8'hff;
+    ttl_74298_sync e9 (.VIDEO_RSTn(VIDEO_RSTn), .clk(clk), .Cen(CK1n), .WS(A14), .A(ld_ena[3:0]), .B(SD_ena[3:0]), .Q(SLD[3:0]));
+    ttl_74298_sync e10  (.VIDEO_RSTn(VIDEO_RSTn), .clk(clk), .Cen(CK1n), .WS(A14), .A(ld_ena[7:4]), .B({1'b0,SD_ena[6:4]}), .Q(SLD[7:4]));
 
     logic H1_SD30_r; //input
     logic COLBANK3, COLBANK4, COLBANK5, LAYER_SELA, LAYER_SELB;
@@ -79,32 +85,35 @@ module AlphaMissionCore_FinalVideo_sync(
     //Block1 = A
     //Block2 = B
     //A = {Block2, Block1};
+
+    logic [7:0] B1D_ena;
+    assign B1D_ena = (layer_ena_dbg[1]) ? B1D : 8'hff; 
     ttl_74153 #(.DELAY_RISE(0), .DELAY_FALL(0)) e11
     (
         .Enable_bar({2{1'b0}}),
         .Select({LAYER_SELB,LAYER_SELAn}),
-        .A_2D({{1'b1, SLD[1], B1D[1], B1D[1]},{1'b1, SLD[0], B1D[0], B1D[0]}}),
+        .A_2D({{1'b1, SLD[1], B1D_ena[1], B1D_ena[1]},{1'b1, SLD[0], B1D_ena[0], B1D_ena[0]}}),
         .Y(SLBD[1:0])
     );
     ttl_74153 #(.DELAY_RISE(0), .DELAY_FALL(0)) e12
     (
         .Enable_bar({2{1'b0}}),
         .Select({LAYER_SELB,LAYER_SELAn}),
-        .A_2D({{1'b1, SLD[3], B1D[3], B1D[3]},{1'b1, SLD[2], B1D[2], B1D[2]}}),
+        .A_2D({{1'b1, SLD[3], B1D_ena[3], B1D_ena[3]},{1'b1, SLD[2], B1D_ena[2], B1D_ena[2]}}),
         .Y(SLBD[3:2])
     );
     ttl_74153 #(.DELAY_RISE(0), .DELAY_FALL(0)) e13
     (
         .Enable_bar({2{1'b0}}),
         .Select({LAYER_SELB,LAYER_SELAn}),
-        .A_2D({{1'b1, SLD[5], B1D[5], B1D[5]},{1'b1, SLD[4], B1D[4], B1D[4]}}),
+        .A_2D({{1'b1, SLD[5], B1D_ena[5], B1D_ena[5]},{1'b1, SLD[4], B1D_ena[4], B1D_ena[4]}}),
         .Y(SLBD[5:4])
     );
     ttl_74153 #(.DELAY_RISE(0), .DELAY_FALL(0)) e14
     (
         .Enable_bar({2{1'b0}}),
         .Select({LAYER_SELB,LAYER_SELAn}),
-        .A_2D({{1'b0, 1'b0, B1D[7], B1D[7]},{1'b1, SLD[6], B1D[6], B1D[6]}}),
+        .A_2D({{1'b0, 1'b0, B1D_ena[7], B1D_ena[7]},{1'b1, SLD[6], B1D_ena[6], B1D_ena[6]}}),
         .Y(SLBD[7:6])
     );
 
