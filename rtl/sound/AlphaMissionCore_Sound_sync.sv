@@ -70,9 +70,10 @@ module AlphaMissionCore_Sound_sync
         T80pa z80_g2 (
         .RESET_n(reset_n),
         .CLK    (clk),
-        .CEN_p  (CEN_p),
-        .CEN_n  (CEN_n),
-        .WAIT_n (~pause_cpu),
+        .CEN_p  (CEN_p & ~pause_cpu), //active high
+        .CEN_n  (CEN_n & ~pause_cpu), //active high
+        //.WAIT_n (~pause_cpu),
+        .WAIT_n (1'b1),
         .INT_n  (nINT),
         .NMI_n  (1'b1),
         .RD_n   (nRD),
@@ -107,7 +108,7 @@ module AlphaMissionCore_Sound_sync
     (
         .rst(~RESETn),        // rst should be at least 6 clk&cen cycles long
         .clk(clk),        // CPU clock
-        .cen(CEN_p),        // optional clock enable, it not needed leave as 1'b1
+        .cen(CEN_p & ~pause_cpu), //active high
         .din(cpu_dout),
         .addr(A[0]),
         .cs_n(YM3526_CSn),

@@ -290,6 +290,10 @@ module AlphaMissionCore_Front_sync(
     );
     assign H8_D = (!F9_Q[5]) ? H8_Dout : 8'hFF;
 
+//    logic LD_reg;
+//    always @(posedge clk) begin
+//       LD_reg <= LD; 
+//    end
     PLSO_shift g10 (.RESETn(VIDEO_RSTn), .CLK(clk), .CEN(~CK0), .LOADn(LD), .SI(1'b1), .D(H11_D), .SO(FD[0])); //Hack CLK should be CK0
     PLSO_shift g9  (.RESETn(VIDEO_RSTn), .CLK(clk), .CEN(~CK0), .LOADn(LD), .SI(1'b1), .D(H9_D),  .SO(FD[1])); //Hack CLK should be CK0
     PLSO_shift g8  (.RESETn(VIDEO_RSTn), .CLK(clk), .CEN(~CK0), .LOADn(LD), .SI(1'b1), .D(H8_D),  .SO(FD[2])); //Hack CLK should be CK0

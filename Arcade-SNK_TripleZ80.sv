@@ -292,6 +292,25 @@ hps_io #(.CONF_STR(CONF_STR)) hps_io
 	.joystick_1(joystick_1)
 );
 
+// PAUSE SYSTEM
+wire pause_cpu;
+
+wire [23:0] rgb_out;
+
+pause #(8,8,8,536) pause (
+ .*,
+ //.OSD_STATUS(1'b0), //pause only on user defined button
+ .clk_sys(clk_53p6),
+ .reset(reset),
+ .user_button(m_pause),
+ .r(R8B),
+ .g(G8B),
+ .b(B8B),
+ .pause_cpu(pause_cpu),
+ .pause_request(),
+ .options(~status[22:21])
+);
+
 // Video rotation 
 wire rotate_ccw = status[11];
 wire no_rotate = orientation | direct_video;
@@ -307,8 +326,8 @@ arcade_video #(288,24) arcade_video
         .clk_video(clk_53p6),
         .ce_pix(ce_pix),
 
-        //.RGB_in(rgb_out),
-		  .RGB_in({R8B,G8B,B8B}),
+        .RGB_in(rgb_out),
+	    //.RGB_in({R8B,G8B,B8B}),
         .HBlank(HBlank),
         .VBlank(VBlank),
         .HSync(HSync),
@@ -344,8 +363,8 @@ SNK_TripleZ80 snk_TZ80_ASO
 (
 	.RESETn(~reset),
 	.VIDEO_RSTn(~reset),
-	//.pause_cpu(pause_cpu),
-	.pause_cpu(1'b0),
+	.pause_cpu(pause_cpu),
+	//.pause_cpu(1'b0),
 	.i_clk(clk_53p6), //53.6MHz
 	.DSW({dsw2,dsw1}),
 	.PLAYER1(PLAYER1),
@@ -414,26 +433,6 @@ logic [7:0] dsw1, dsw2;
 assign dsw1 = sw[0];
 assign dsw2 = sw[1];
 //Keyboard
-
-
-// PAUSE SYSTEM
-//wire pause_cpu;
-//
-//wire [23:0] rgb_out;
-//
-//pause #(8,8,8,536) pause (
-//  .*,
-//  //.OSD_STATUS(1'b0), //pause only on user defined button
-//  .clk_sys(clk_53p6),
-//  .reset(reset),
-//  .user_button(m_pause),
-//  .r(R8B),
-//  .g(G8B),
-//  .b(B8B),
-//  .pause_cpu(pause_cpu),
-//  .pause_request(),
-//  .options(~status[22:21])
-//);
 
 //Joysticks
 //Player 1

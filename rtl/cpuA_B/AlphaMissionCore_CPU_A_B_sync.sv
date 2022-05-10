@@ -131,9 +131,10 @@ module AlphaMissionCore_CPU_A_B_sync
         T80pa z80_E5 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        .CEN_p  (Cen_p),
-        .CEN_n  (Cen_n),
-        .WAIT_n (~pause_cpu),
+        .CEN_p  (Cen_p & ~pause_cpu), //active high
+        .CEN_n  (Cen_n & ~pause_cpu), //active high
+        //.WAIT_n (~pause_cpu),
+        .WAIT_n (1'b1),
         .INT_n  (cpuA_nINT),
         .NMI_n  (cpuA_nNMI),
         .RD_n   (cpuA_nRD),
@@ -307,9 +308,10 @@ module AlphaMissionCore_CPU_A_B_sync
         T80pa z80_E1 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        .CEN_p  (Cen_p),
-        .CEN_n  (Cen_n),
-        .WAIT_n (BWA | ~pause_cpu),
+        .CEN_p  (Cen_p & ~pause_cpu), //active high
+        .CEN_n  (Cen_n & ~pause_cpu), //active high
+        //.WAIT_n (BWA | ~pause_cpu),
+        .WAIT_n (BWA),
         .INT_n  (cpuB_nINT),
         .NMI_n  (cpuB_nNMI),
         .RD_n   (cpuB_nRD),
