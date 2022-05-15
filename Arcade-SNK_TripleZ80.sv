@@ -207,31 +207,34 @@ assign VIDEO_ARY = (!ar) ? (orientation  ? 8'd3 : 8'd4) : 12'd0;
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-//     XXX XXXX  XXXXX
+// X   XXX XXXX  XXXXXXX
 `include "build_id.v" 
 localparam CONF_STR = {
-	"Alpha Mission;;",
+	"SNK_TripleZ80;;",
 	"-;",
     "P1,Screen Settings;",
     "P1-;",
-    "P1O89,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"P1OA,Orientation,Horz.,Vert.;",
-	"P1OB,Rotation,CW,CCW;",
-	"P1O46,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
+    "P1O[9:8],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
+	"P1O[10],Orientation,Horz.,Vert.;",
+	"P1O[11],Rotate CCW,Off,On;",
+	"P1O[6:4],Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",
 	"-;",
 	"P2,Other Settings;",
 	"P2-;",
-	"P2OE,VGA Scaler,Off,On;",
-	"P2OF,Flip,Off,On;",
-	"P2OG,Side Layer,On,Off;",
-	"P2OH,Back Layer,On,Off;",
-	"P2OI,Front Layer,On,Off;",
+	"P2O[14],VGA Scaler,Off,On;",
+	"P2O[15],Flip,Off,On;",
+	"P2O[16],Side Layer,On,Off;",
+	"P2O[17],Back Layer,On,Off;",
+	"P2O[18],Front Layer,On,Off;",
 	"P2-;",
+//	"P3,SNAC;",
+//	"P3OJK,Type,None,DB15,CUSTOM_1PL_10BTN,--;",
+//	"P3-;",
 	"DIP;",
 	"-;",
-	"T0,Reset;",
-	"R0,Reset and close OSD;",
+	"T[0],Reset;",
+	"R[0],Reset and close OSD;",
 	"J1,Fire,Missile,Armor,Start1,Coin,Pause,Service,Start2;",
 	"jn,A,B,C,Start,R,L,X,Y;",
 	"V,v",`BUILD_DATE 
@@ -258,11 +261,52 @@ end
 //wire forced_scandoubler;
 
 wire  [1:0] buttons;
-wire [31:0] status;
+wire [127:0] status;
 wire [10:0] ps2_key;
 
 wire [15:0] joystick_0, joystick_1;
 //wire [15:0] joy = joystick_0 | joystick_1;
+
+
+//SNAC joysticks
+//wire snac_dev = status[20:19];
+// reg [15:0] JOYDB15_1,JOYDB15_2;
+// joy_db15 joy_db15
+// (
+//   .clk       ( CLK_JOY   ), //48MHz
+//   .JOY_CLK   ( JOY_CLK   ),
+//   .JOY_DATA  ( JOY_DATA  ),
+//   .JOY_LOAD  ( JOY_LOAD  ),
+//   .joystick1 ( JOYDB15_1 ),
+//   .joystick2 ( JOYDB15_2 )	  
+// );
+
+// wire [15:0] custom_joy1;
+// assign custom_joy1 = 16'hff;
+// joy_10btn custom_joy
+// (
+// 	.clk(clk_53p6),      //Reloj de Entrada sobre 48-50Mhz
+// 	.JOY_CLK(JOY_CLK),
+// 	.JOY_LOAD(JOY_LOAD),
+// 	//.JOY_DATA(JOY_DATA), 
+// 	.JOY_DATA(1'b1), 
+//  	.JOYSTICK1(custom_joy1) //13 UP,12 DOWN,11 RIGHT,10 LEFT,9 H,8 G,7 F,6 E,5 D,4 C,3 B,2 A,1 START1,0 COIN
+// );
+
+// Open-drain User port.
+// 0 - D+/RX
+// 1 - D-/TX
+// 2..6 - USR2..USR6
+// Set USER_OUT to 1 to read from USER_IN.
+// (*keep*) wire  JOY_LOAD;
+// (*keep*) wire  JOY_CLK;
+
+	// assign USER_OUT[5] = 1'b1; 
+	// assign USER_OUT[0] = JOY_LOAD; //USB3 pin 2 D+
+	// assign USER_OUT[1] = JOY_CLK;  //USB3 pin 3 D- 
+
+
+//(*keep*) wire  JOY_DATA  = USER_IN[5]; //USB3 pin 9 TX+ -> pin 6 RX+ s
 
 hps_io #(.CONF_STR(CONF_STR)) hps_io
 (
@@ -458,20 +502,33 @@ reg m_pause     = 1'b0; //active high
 //reg m_armor2    = 1'b1;
 //reg m_start2    = 1'b1;
 
+//custom_joy1:13 UP,12 DOWN,11 RIGHT,10 LEFT,9 H,8 G,7 F,6 E,5 D,4 C,3 B,2 A,1 START1,0 COIN
 always @(posedge clk_53p6) begin
+	//              ~(active high)    active low
+//	m_up1       <= ~joystick_0[3]  & custom_joy1[13];
+//	m_down1     <= ~joystick_0[2]  & custom_joy1[12];
+//	m_left1     <= ~joystick_0[1]  & custom_joy1[10];
+//	m_right1    <= ~joystick_0[0]  & custom_joy1[11];
+//	m_shot1     <= ~joystick_0[4]  & custom_joy1[2];
+//	m_missile1  <= ~joystick_0[5]  & custom_joy1[3];
+//	m_armor1    <= ~joystick_0[6]  & custom_joy1[4];
+//	m_start1    <= ~joystick_0[7]  & custom_joy1[1];
+//   m_start2     <= ~joystick_0[11] & custom_joy1[8];
+//	m_coin      <= ~joystick_0[8]  & custom_joy1[0];
+//	m_pause     <=  joystick_0[9]  & ~custom_joy1[9]; //active high
+//	m_service   <= ~joystick_0[10] & custom_joy1[5];
 	m_up1       <= ~joystick_0[3];
 	m_down1     <= ~joystick_0[2];
 	m_left1     <= ~joystick_0[1];
 	m_right1    <= ~joystick_0[0];
-	m_shot1     <= ~joystick_0[4];
-	m_missile1  <= ~joystick_0[5];
-	m_armor1    <= ~joystick_0[6];
-	m_start1    <= ~joystick_0[7];
-   m_start2    <= ~joystick_0[11];
-//	m_service   <= ~joystick_0[10] | ~joystick_1[10];
-	m_coin      <= ~joystick_0[8];
+	m_shot1     <= ~joystick_0[4];  
+	m_missile1  <= ~joystick_0[5];  
+	m_armor1    <= ~joystick_0[6];  
+	m_start1    <= ~joystick_0[7];  
+    m_start2    <= ~joystick_0[11]; 
+	m_coin      <= ~joystick_0[8];  
 	m_pause     <=  joystick_0[9]; //active high
-	m_service   <= ~joystick_0[10];
+	m_service   <= ~joystick_0[10]; 
 end
 
 assign PLAYER1 = {2'b11,m_up1,m_down1,m_right1,m_left1,m_service,m_start2,3'b111, m_armor1,m_missile1,m_shot1,m_start1,m_coin};

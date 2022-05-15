@@ -1,10 +1,10 @@
-//ttl_74169_sync.v
+//n9bit_counter.sv
 //Author: @RndMnkIII
-//Date: 16/03/2022
+//Date: 14/05/2022
 `default_nettype none
 `timescale 1ns/1ps
 
-module ttl_74169_sync
+module n9bit_counter
 (
   input wire Reset_n,
   input wire clk,
@@ -13,19 +13,16 @@ module ttl_74169_sync
   input wire load_n,    // 1 = Count, 0 = Load
   input wire ent_n,
   input wire enp_n,
-  input wire [3:0] P,
-
-  output wire rco_n,    // Ripple Carry-out (RCO)
-  output wire [3:0] Q   // 4-bit output
+  input wire [8:0] P,
+  output logic [8:0] Q   // 4-bit output
 );
 
-//reg rco = 1'b0;
-reg [3:0] count = 0;
-reg last_cen;
+logic [8:0] count = 0;
+logic last_cen;
 
 always @(posedge clk) begin
     if(!Reset_n) begin
-        count <= 4'h0;
+        count <= 9'h0;
         last_cen<= 1'b1;
     end
     else begin
@@ -41,13 +38,13 @@ always @(posedge clk) begin
                 if (direction)
                 begin
                 // Counting up
-                if (count == 4'd15) count <= 4'd0;
+                if (count == 9'd511) count <= 9'd0;
                 else count <=  count + 1;
                 end
                 else
                 begin
                 // Counting down
-                if (count == 4'd0) count <= 4'd15;
+                if (count == 9'd0) count <= 9'd511;
                 else count <=  count - 1;
                 end
             end
@@ -56,7 +53,4 @@ always @(posedge clk) begin
 end
 
 assign Q = count;
-//assign rco_n = ~rco;
-assign rco_n = !load_n ? 1'b0: ~((&count) & ~ent_n); 
-
 endmodule

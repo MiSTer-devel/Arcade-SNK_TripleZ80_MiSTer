@@ -2,7 +2,7 @@
 	<name>ASO - Armored Scrum Object</name>
 	<mameversion>0193</mameversion>
 	<setname>aso</setname>
-	<mratimestamp>20220510</mratimestamp>
+	<mratimestamp>20220515</mratimestamp>
 	<year>1985</year>
 	<manufacturer>SNK</manufacturer>
 	<category>Shooter / Flying Vertical</category>
@@ -18,6 +18,7 @@
 	<!-- md5="7005609F5CDD4F7D8107D6A0C170EE3F" -->
 
     <!-- DSW1=9C, DSW2=F7 byte mas significativo a la derecha de la cadena -->
+	<!-- 1101_0111 1001_1100 -->
 	<switches default="9C,F7" base="16">
 		<!-- DSW1 -->
 		<dip bits="0"     name="Allow Continue" ids="No,3 Times" values="1,0"/>

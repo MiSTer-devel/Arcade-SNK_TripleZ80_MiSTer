@@ -47,7 +47,6 @@ module AlphaMissionCore_LineBuffer_sync(
         .Clk(clk), //2
         .Rst_n(VIDEO_RSTn),
         .Clear_bar(1'b1), //1
-        // .Load_bar(HLDn), //9
         .Load_bar(FCK_LDn), //HACK
         .ENT(1'b1), //7
         .ENP(1'b1), //10
@@ -63,7 +62,6 @@ module AlphaMissionCore_LineBuffer_sync(
         .Clk(clk), //2
         .Rst_n(VIDEO_RSTn),
         .Clear_bar(1'b1), //1
-        // .Load_bar(HLDn), //9
         .Load_bar(FCK_LDn), //HACK
         .ENT(A11_RCO), //7
         .ENP(1'b1), //10
@@ -79,7 +77,6 @@ module AlphaMissionCore_LineBuffer_sync(
         .Clk(clk), //2
         .Rst_n(VIDEO_RSTn),
         .Clear_bar(1'b1), //1
-        // .Load_bar(HLDn), //9
         .Load_bar(FCK_LDn), //HACK
         .ENT(A12_RCO), //7
         .ENP(1'b1), //10
@@ -91,11 +88,14 @@ module AlphaMissionCore_LineBuffer_sync(
 
     //HACK: delay HLD signal to trigger load 
     logic HLDr;
-    always @(posedge clk) HLDr <= HLD;
+    logic FCK_LDnr;
+    always @(posedge clk) begin
+        HLDr <= HLD;
+        FCK_LDnr <= FCK_LDn;
+    end
 
     logic [8:0] RA;
-    logic c9_rco;
-    ttl_74169_sync c9
+    n9bit_counter ra_counter
     (
         .Reset_n(VIDEO_RSTn),
         .clk(clk), 
@@ -104,40 +104,53 @@ module AlphaMissionCore_LineBuffer_sync(
         .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
         .ent_n(1'b0),
         .enp_n(1'b0),
-        .P(FY[3:0]),
-        .rco_n(c9_rco),    // Ripple Carry-out (RCO)
-        .Q(RA[3:0])   // 4-bit output
+        .P({FY8,FY}),
+        .Q(RA)   // 4-bit output
     );
+    // logic c9_rco;
+    // counter_74169 c9
+    // (
+    //     .Reset_n(VIDEO_RSTn),
+    //     .clk(clk), 
+    //     .cen(CK1),
+    //     .direction(INVn), // 1 = Up, 0 = Down
+    //     .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
+    //     .ent_n(1'b0),
+    //     .enp_n(1'b0),
+    //     .P(FY[3:0]),
+    //     .rco_n(c9_rco),    // Ripple Carry-out (RCO)
+    //     .Q(RA[3:0])   // 4-bit output
+    // );
 
-    logic c10_rco;
-    ttl_74169_sync c10
-    (
-        .Reset_n(VIDEO_RSTn),
-        .clk(clk), 
-        .cen(CK1),
-        .direction(INVn), // 1 = Up, 0 = Down
-        .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
-        .ent_n(c9_rco),
-        .enp_n(1'b0),
-        .P(FY[7:4]),
-        .rco_n(c10_rco),    // Ripple Carry-out (RCO)
-        .Q(RA[7:4])   // 4-bit output
-    );
+    // logic c10_rco;
+    // counter_74169 c10
+    // (
+    //     .Reset_n(VIDEO_RSTn),
+    //     .clk(clk), 
+    //     .cen(CK1),
+    //     .direction(INVn), // 1 = Up, 0 = Down
+    //     .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
+    //     .ent_n(c9_rco),
+    //     .enp_n(1'b0),
+    //     .P(FY[7:4]),
+    //     .rco_n(c10_rco),    // Ripple Carry-out (RCO)
+    //     .Q(RA[7:4])   // 4-bit output
+    // );
 
-    logic [2:0] c11_dum;
-    ttl_74169_sync c11
-    (
-        .Reset_n(VIDEO_RSTn),
-        .clk(clk), 
-        .cen(CK1),
-        .direction(INVn), // 1 = Up, 0 = Down
-        .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
-        .ent_n(c10_rco),
-        .enp_n(1'b0),
-        .P({3'b111,FY8}),
-        .rco_n(),    // Ripple Carry-out (RCO)
-        .Q({c11_dum,RA[8]})   // 4-bit output
-    );
+    // logic [2:0] c11_dum;
+    // counter_74169 c11
+    // (
+    //     .Reset_n(VIDEO_RSTn),
+    //     .clk(clk), 
+    //     .cen(CK1),
+    //     .direction(INVn), // 1 = Up, 0 = Down
+    //     .load_n(HLDr), //Use delayed signal for trigger with rising edge of CK1
+    //     .ent_n(c10_rco),
+    //     .enp_n(1'b0),
+    //     .P({3'b111,FY8}),
+    //     .rco_n(),    // Ripple Carry-out (RCO)
+    //     .Q({c11_dum,RA[8]})   // 4-bit output
+    // );
 
     logic a14_A; //74LS20 4-input NAND gate
     assign a14_A = ~(&FD[2:0]);

@@ -17,7 +17,7 @@ module AlphaMissionCore_CPU_A_B_sync
     input wire [15:0] PLAYER1,
     input wire [15:0] PLAYER2,
 	 input wire [15:0] DSW,
-    input  wire VBL /* synthesis syn_keep = 1 */,
+    input  wire VBL,
     input  wire BWA,
     input  wire A_B,
     input  wire RLA,
@@ -260,13 +260,12 @@ module AlphaMissionCore_CPU_A_B_sync
         else if(!CS_ROM_P2n && !cpuA_nMR)              cpuA_Din <= data_P2_7D; 
         else if(!CS_ROM_P1n && !cpuA_nMR)              cpuA_Din <= data_P1_8D;
         //IO input 
-        else if(!COIN)                                 cpuA_Din <= {2'b11,SND_BUSY,PLAYER1[8],PLAYER1[1],PLAYER1[9],1'b1,PLAYER1[0]}; //{UNK,UNK,SND_BUSY,START2,START1,SERVICE,UNK,COIN_1}
-		                                                           //{2'b11,m_up1,m_down1,m_right1,m_left1,m_service, m_start2, 3'b111, m_armor1,m_missile1,m_shot1,m_start1,m_coin};                          
-        else if(!P1)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player1 inputs
-        else if(!P2)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player2 inputs
+        else if(!COIN)                                 cpuA_Din <= {2'b11,SND_BUSY,PLAYER1[8],PLAYER1[1],PLAYER1[9],1'b1,PLAYER1[0]}; //{UNK,UNK,SND_BUSY,START2,START1,SERVICE,UNK,COIN_1}                       
+        else if(!P1)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player1 inputs:{UNK,MISSILE,SHOT,ARMOR,RIGHT,LEFT,DOWN,UP}
+        else if(!P2)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player2 inputs:{UNK,MISSILE,SHOT,ARMOR,RIGHT,LEFT,DOWN,UP}
         else if(!P1_P2)                                cpuA_Din <= 8'hFF;
-        else if(!DIP1)                                 cpuA_Din <= DSW[7:0]; //DIP1 Switches 
-        else if(!DIP2)                                 cpuA_Din <= DSW[15:8];//DIP2 Switches
+        else if(!DIP1)                                 cpuA_Din <= DSW[7:0]; //8'b1001_1100; //DSW[7:0]; //DIP1 Switches 
+        else if(!DIP2)                                 cpuA_Din <= DSW[15:8]; //8'b1111_0111; //DSW[15:8];//DIP2 Switches
         else if(!cpuB_NMI_TRIG_R_cpuA_NMI_ACK_W_CTRL)  cpuA_Din <= 8'hFF; //C700 Read
         //VIDEO RAM & Regs.      
         else if(!VD_to_cpuAdbus)                       cpuA_Din <= cpuA_Vin;

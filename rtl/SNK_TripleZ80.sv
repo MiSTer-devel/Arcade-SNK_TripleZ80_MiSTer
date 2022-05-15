@@ -447,7 +447,9 @@ AlphaMissionCore_Clocks_Sync amc_clocks_sync(
         .FV(FV),
         .LC(LC),
         .VLK(VLK),
+	    //.VLK(~VLK), //HACK, do not do nothing
         .FCK(FCK),
+        //.FCK(~FCK), //HACK, mess sprites
         .H3(H[3]),
         .LD(LD),
         .CK0(CK0),

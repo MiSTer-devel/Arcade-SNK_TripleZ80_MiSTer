@@ -215,7 +215,13 @@ module AlphaMissionCore_Front_sync(
     logic e6_B;
     assign e6_B = &e5_sum;
     logic e8_C;
-    assign e8_C = ~(e7_C & e6_B);
+    ////////////Hack: insert one clock cycle delay to e7_C,e6_B
+    reg e7_Cr, e6_Br;
+    always @(posedge clk) begin
+        e7_Cr    <= e7_C;
+        e6_Br    <= e6_B;
+    end
+    assign e8_C = ~(e7_Cr & e6_Br);
 
     logic [5:0] F9_Q;
 
@@ -261,6 +267,7 @@ module AlphaMissionCore_Front_sync(
     );
 
     assign H11_D = (!F9_Q[5]) ? H11_Dout : 8'hFF;
+    //assign H11_D = (!f9q5_reg) ? H11_Dout : 8'hFF; //HACK ADDED ONE FCK CLOCK PERIOD DELAY TO F9_Q[5]
 
     logic [7:0] H9_D, H9_Dout; //On PCB pulled to Vcc with 4.7Kx8 RA6
     eprom_32K P12_H9
@@ -275,6 +282,7 @@ module AlphaMissionCore_Front_sync(
         .WR(ioctl_wr)
     );
     assign H9_D = (!F9_Q[5]) ? H9_Dout : 8'hFF;
+    //assign H9_D = (!f9q5_reg) ? H9_Dout : 8'hFF; //HACK ADDED ONE FCK CLOCK PERIOD DELAY TO F9_Q[5]
 
     logic [7:0] H8_D,H8_Dout; //On PCB pulled to Vcc with 4.7Kx8 RA5
     eprom_32K P13_H8
@@ -289,6 +297,7 @@ module AlphaMissionCore_Front_sync(
         .WR(ioctl_wr)
     );
     assign H8_D = (!F9_Q[5]) ? H8_Dout : 8'hFF;
+    //assign H8_D = (!f9q5_reg) ? H8_Dout : 8'hFF; //HACK ADDED ONE FCK CLOCK PERIOD DELAY TO F9_Q[5]
 
 //    logic LD_reg;
 //    always @(posedge clk) begin
