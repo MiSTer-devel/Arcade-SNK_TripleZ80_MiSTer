@@ -24,7 +24,7 @@
 		<dip bits="0"     name="Allow Continue" ids="No,3 Times" values="1,0"/>
 		<dip bits="1"     name="Cabinet" ids="Upright,Cocktail" values="0,1"/>
 		<dip bits="2"     name="Lives"   ids="3,5" values="1,0"/>
-		<dip bits="3,4,5" name="Coinage" ids="4Co/1Cr,3Co/1Cr,2Co/1Cr,1Co/1Cr,1Co/2Cr,1Co/3Cr,1Co/4Cr,1Co/6Cr" values="4,5,6,7,3,2,1,0"/>
+		<dip bits="3,5" name="Coinage" ids="4Co/1Cr,3Co/1Cr,2Co/1Cr,1Co/1Cr,1Co/2Cr,1Co/3Cr,1Co/4Cr,1Co/6Cr" values="4,5,6,7,3,2,1,0"/>
 		<dip bits="6,7"   name="--"      ids="--,--,--,--" values="3,3,3,3" />
 		<!-- DSW2 -->
 		<dip bits="8"     name="Bonus Life"                 ids="50k 100k 100k+,50k 100k" values="1,0"/>
