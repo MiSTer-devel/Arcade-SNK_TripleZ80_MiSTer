@@ -174,7 +174,7 @@ module emu
 ///////// Default values for ports not used in this core /////////
 
 assign ADC_BUS  = 'Z;
-assign USER_OUT = '1;
+//assign USER_OUT = '1;
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
@@ -227,16 +227,13 @@ localparam CONF_STR = {
 	"P2O[16],Side Layer,On,Off;",
 	"P2O[17],Back Layer,On,Off;",
 	"P2O[18],Front Layer,On,Off;",
-	"P2-;",
-//	"P3,SNAC;",
-//	"P3OJK,Type,None,DB15,CUSTOM_1PL_10BTN,--;",
-//	"P3-;",
+	"P2-;",,
 	"DIP;",
 	"-;",
 	"T[0],Reset;",
 	"R[0],Reset and close OSD;",
-	"J1,Fire,Missile,Armor,Start1,Coin,Pause,Service,Start2;",
-	"jn,A,B,C,Start,R,L,X,Y;",
+	"J1,Fire,Missile,Armor,Start,Coin,Pause,Service;",
+	"jn,A,B,C,Start,X,Y,Z;",
 	"V,v",`BUILD_DATE 
 };
 
@@ -250,11 +247,13 @@ wire  [7:0] ioctl_din;
 wire  [7:0] ioctl_index;
 wire        ioctl_wait;
 wire        rom_download = ioctl_download && (ioctl_index  == 0);
+
+//Debug enable/disable Graphics layers
 reg   [2:0] layer_ena_dbg = 3'b111;
 always @(posedge clk_53p6) begin
-	layer_ena_dbg[0] <= ~status[16];
-	layer_ena_dbg[1] <= ~status[17];
-	layer_ena_dbg[2] <= ~status[18];
+	layer_ena_dbg[0] <= ~status[16]; //SIDE
+	layer_ena_dbg[1] <= ~status[17]; //BACK1
+	layer_ena_dbg[2] <= ~status[18]; //FRONT
 end
 
 
@@ -265,48 +264,34 @@ wire [127:0] status;
 wire [10:0] ps2_key;
 
 wire [15:0] joystick_0, joystick_1;
-//wire [15:0] joy = joystick_0 | joystick_1;
-
 
 //SNAC joysticks
-//wire snac_dev = status[20:19];
-// reg [15:0] JOYDB15_1,JOYDB15_2;
+// wire [1:0] SNAC_dev = status[20:19];
+// wire         JOY_CLK, JOY_LOAD;
+// wire         JOY_DATA  = (SNAC_dev == 2'd1) ? USER_IN[5] : '1;
+
+// always_comb begin
+// 	USER_OUT    = 8'hFF; 
+
+// 	if ((SNAC_dev == 2'd1) || (SNAC_dev == 2'd2)) begin
+// 		USER_OUT[0] = JOY_LOAD;
+// 		USER_OUT[1] = JOY_CLK;
+// 	end 
+// end
+
+// wire [15:0] JOY_DB1 = (SNAC_dev == 2'd1) ? JOYDB15_1 : 16'd0;
+// wire [15:0] JOY_DB2 = (SNAC_dev == 2'd2) ? JOYDB15_2 : 16'd0;
+
+// wire [15:0] JOYDB15_1,JOYDB15_2;
 // joy_db15 joy_db15
 // (
-//   .clk       ( CLK_JOY   ), //48MHz
+//   .clk       ( clk_53p6  ), //53.6MHz
 //   .JOY_CLK   ( JOY_CLK   ),
 //   .JOY_DATA  ( JOY_DATA  ),
 //   .JOY_LOAD  ( JOY_LOAD  ),
 //   .joystick1 ( JOYDB15_1 ),
 //   .joystick2 ( JOYDB15_2 )	  
 // );
-
-// wire [15:0] custom_joy1;
-// assign custom_joy1 = 16'hff;
-// joy_10btn custom_joy
-// (
-// 	.clk(clk_53p6),      //Reloj de Entrada sobre 48-50Mhz
-// 	.JOY_CLK(JOY_CLK),
-// 	.JOY_LOAD(JOY_LOAD),
-// 	//.JOY_DATA(JOY_DATA), 
-// 	.JOY_DATA(1'b1), 
-//  	.JOYSTICK1(custom_joy1) //13 UP,12 DOWN,11 RIGHT,10 LEFT,9 H,8 G,7 F,6 E,5 D,4 C,3 B,2 A,1 START1,0 COIN
-// );
-
-// Open-drain User port.
-// 0 - D+/RX
-// 1 - D-/TX
-// 2..6 - USR2..USR6
-// Set USER_OUT to 1 to read from USER_IN.
-// (*keep*) wire  JOY_LOAD;
-// (*keep*) wire  JOY_CLK;
-
-	// assign USER_OUT[5] = 1'b1; 
-	// assign USER_OUT[0] = JOY_LOAD; //USB3 pin 2 D+
-	// assign USER_OUT[1] = JOY_CLK;  //USB3 pin 3 D- 
-
-
-//(*keep*) wire  JOY_DATA  = USER_IN[5]; //USB3 pin 9 TX+ -> pin 6 RX+ s
 
 hps_io #(.CONF_STR(CONF_STR)) hps_io
 (
@@ -346,7 +331,7 @@ pause #(8,8,8,536) pause (
  //.OSD_STATUS(1'b0), //pause only on user defined button
  .clk_sys(clk_53p6),
  .reset(reset),
- .user_button(m_pause),
+ .user_button((m_pause1 | m_pause2)),
  .r(R8B),
  .g(G8B),
  .b(B8B),
@@ -412,7 +397,7 @@ SNK_TripleZ80 snk_TZ80_ASO
 	.i_clk(clk_53p6), //53.6MHz
 	.DSW({dsw2,dsw1}),
 	.PLAYER1(PLAYER1),
-	.PLAYER2(16'hffff),
+	.PLAYER2(PLAYER2),
 	.GAME(game), //default ASO (ASO,Alpha Mission, Arian Mission)
 	//hps_io rom interface
 	.ioctl_addr(ioctl_addr[24:0]),
@@ -444,7 +429,6 @@ assign CLK_VIDEO = clk_53p6;
 //Audio
 assign AUDIO_S = 1'b1; //Signed audio samples
 assign AUDIO_MIX = 2'b00; //no mix
-
 
 //synchronize audio
 reg [15:0] snd_r;
@@ -480,57 +464,61 @@ assign dsw2 = sw[1];
 
 //Joysticks
 //Player 1
-reg m_up1       = 1'b1;
-reg m_down1     = 1'b1;
-reg m_left1     = 1'b1;
-reg m_right1    = 1'b1;
-reg m_shot1     = 1'b1;
-reg m_missile1  = 1'b1;
-reg m_armor1    = 1'b1;
-reg m_service   = 1'b1;
-reg m_start1    = 1'b1;
-reg m_start2    = 1'b1;
-reg m_coin      = 1'b1;
-reg m_pause     = 1'b0; //active high
+wire m_up1;
+wire m_down1;
+wire m_left1;
+wire m_right1;
+wire m_shot1;
+wire m_missile1;
+wire m_armor1;
+wire m_service1;
+wire m_start1;
+wire m_coin1;
+wire m_pause1; //active high
+
 //Player 2
-//reg m_up2       = 1'b1;
-//reg m_down2     = 1'b1;
-//reg m_left2     = 1'b1;
-//reg m_right2    = 1'b1;
-//reg m_shot2     = 1'b1;
-//reg m_missile2  = 1'b1;
-//reg m_armor2    = 1'b1;
-//reg m_start2    = 1'b1;
+wire m_up2;
+wire m_down2;
+wire m_left2;
+wire m_right2;
+wire m_shot2;
+wire m_missile2;
+wire m_armor2;
+wire m_service2;
+wire m_start2;
+wire m_coin2;
+wire m_pause2; //active high
 
 //custom_joy1:13 UP,12 DOWN,11 RIGHT,10 LEFT,9 H,8 G,7 F,6 E,5 D,4 C,3 B,2 A,1 START1,0 COIN
-always @(posedge clk_53p6) begin
-	//              ~(active high)    active low
-//	m_up1       <= ~joystick_0[3]  & custom_joy1[13];
-//	m_down1     <= ~joystick_0[2]  & custom_joy1[12];
-//	m_left1     <= ~joystick_0[1]  & custom_joy1[10];
-//	m_right1    <= ~joystick_0[0]  & custom_joy1[11];
-//	m_shot1     <= ~joystick_0[4]  & custom_joy1[2];
-//	m_missile1  <= ~joystick_0[5]  & custom_joy1[3];
-//	m_armor1    <= ~joystick_0[6]  & custom_joy1[4];
-//	m_start1    <= ~joystick_0[7]  & custom_joy1[1];
-//   m_start2     <= ~joystick_0[11] & custom_joy1[8];
-//	m_coin      <= ~joystick_0[8]  & custom_joy1[0];
-//	m_pause     <=  joystick_0[9]  & ~custom_joy1[9]; //active high
-//	m_service   <= ~joystick_0[10] & custom_joy1[5];
-	m_up1       <= ~joystick_0[3];
-	m_down1     <= ~joystick_0[2];
-	m_left1     <= ~joystick_0[1];
-	m_right1    <= ~joystick_0[0];
-	m_shot1     <= ~joystick_0[4];  
-	m_missile1  <= ~joystick_0[5];  
-	m_armor1    <= ~joystick_0[6];  
-	m_start1    <= ~joystick_0[7];  
-    m_start2    <= ~joystick_0[11]; 
-	m_coin      <= ~joystick_0[8];  
-	m_pause     <=  joystick_0[9]; //active high
-	m_service   <= ~joystick_0[10]; 
-end
+//db15:        //    11 L, 10 S, 9 F, 8 E, 7 D, 6 C, 5 B, 4 A, 3 U, 2 D, 1 L, 0 R
+//    10 9876543210
+//----LS FEDCBAUDLR
 
-assign PLAYER1 = {2'b11,m_up1,m_down1,m_right1,m_left1,m_service,m_start2,3'b111, m_armor1,m_missile1,m_shot1,m_start1,m_coin};
-//assign PLAYER2 = {2'b11,m_up1,m_down1,m_right1,m_left1,         5'b11111,m_armor1,m_missile1,m_shot1,m_start2,1'b1  };
+	assign m_up1       = ~joystick_0[3];
+	assign m_down1     = ~joystick_0[2];
+	assign m_left1     = ~joystick_0[1];
+	assign m_right1    = ~joystick_0[0];
+	assign m_shot1     = ~joystick_0[4];  
+	assign m_missile1  = ~joystick_0[5]; 
+	assign m_armor1    = ~joystick_0[6];   
+	assign m_start1    = ~joystick_0[7];  
+	assign m_coin1     = ~joystick_0[8];  
+	assign m_service1  = ~joystick_0[9];
+	assign m_pause1    =  joystick_0[10]; //active high
+	
+	assign m_up2       = ~joystick_1[3];
+	assign m_down2     = ~joystick_1[2];
+	assign m_left2     = ~joystick_1[1];
+	assign m_right2    = ~joystick_1[0];
+	assign m_shot2     = ~joystick_1[4];  
+	assign m_missile2  = ~joystick_1[5]; 
+	assign m_armor2    = ~joystick_1[6];   
+	assign m_start2    = ~joystick_1[7];  
+	assign m_coin2     = ~joystick_1[8];  
+	assign m_service2  = ~joystick_1[9];
+	assign m_pause2    =  joystick_1[10]; //active high
+
+assign PLAYER1 = {2'b11,m_up1,m_down1,m_right1,m_left1,m_service1,4'b1111, m_armor1,m_missile1,m_shot1,m_start1,m_coin1};
+assign PLAYER2 = {2'b11,m_up2,m_down2,m_right2,m_left2,m_service2,4'b1111, m_armor1,m_missile1,m_shot1,m_start1,m_coin1};
+
 endmodule

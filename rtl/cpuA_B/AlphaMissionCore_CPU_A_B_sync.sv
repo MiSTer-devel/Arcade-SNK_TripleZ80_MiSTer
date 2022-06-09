@@ -127,12 +127,22 @@ module AlphaMissionCore_CPU_A_B_sync
             end else reset_n <= 1'b1;
         end
 
+
+    //sync H0 and Cen_p, Cen_n signals by adding one clock periods delay to Cen_p, Cen_n
+    logic Cen_pr1;
+    logic Cen_nr1;
+
+    always @(posedge clk) begin
+        Cen_pr1 <= Cen_p;
+        Cen_nr1 <= Cen_n;
+    end
+
     //T80pa CLK x4 real CPU clock
         T80pa z80_E5 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        .CEN_p  (Cen_p & ~pause_cpu), //active high
-        .CEN_n  (Cen_n & ~pause_cpu), //active high
+        .CEN_p  (Cen_pr1 & ~pause_cpu), //active high
+        .CEN_n  (Cen_nr1 & ~pause_cpu), //active high
         //.WAIT_n (~pause_cpu),
         .WAIT_n (1'b1),
         .INT_n  (cpuA_nINT),
@@ -179,7 +189,12 @@ module AlphaMissionCore_CPU_A_B_sync
 
     assign C7_1_OR = |cpuA_A[13:12];
     assign C6_1_NOR = ~(C7_1_OR | cpuA_A[11]);
-    assign AE_addr = C6_1_NOR | C5_1_Y3n;
+
+     logic c6nor1_r;
+    always @(posedge clk) begin
+        c6nor1_r <= C6_1_NOR;
+    end
+    assign AE_addr = c6nor1_r | C5_1_Y3n;
     
     assign AE = ~(AE_addr | cpuA_nMR); //C6_2_NOR;
 
@@ -260,9 +275,9 @@ module AlphaMissionCore_CPU_A_B_sync
         else if(!CS_ROM_P2n && !cpuA_nMR)              cpuA_Din <= data_P2_7D; 
         else if(!CS_ROM_P1n && !cpuA_nMR)              cpuA_Din <= data_P1_8D;
         //IO input 
-        else if(!COIN)                                 cpuA_Din <= {2'b11,SND_BUSY,PLAYER1[8],PLAYER1[1],PLAYER1[9],1'b1,PLAYER1[0]}; //{UNK,UNK,SND_BUSY,START2,START1,SERVICE,UNK,COIN_1}                       
+        else if(!COIN)                                 cpuA_Din <= {2'b11,SND_BUSY,PLAYER2[1],PLAYER1[1],(PLAYER1[9] & PLAYER2[9]),1'b1,(PLAYER1[0] & PLAYER2[0])}; //{UNK,UNK,SND_BUSY,START2,START1,SERVICE,UNK,COIN_1}                       
         else if(!P1)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player1 inputs:{UNK,MISSILE,SHOT,ARMOR,RIGHT,LEFT,DOWN,UP}
-        else if(!P2)                                   cpuA_Din <= {1'b1,PLAYER1[3],PLAYER1[2],PLAYER1[4],PLAYER1[11],PLAYER1[10],PLAYER1[12],PLAYER1[13]}; //Player2 inputs:{UNK,MISSILE,SHOT,ARMOR,RIGHT,LEFT,DOWN,UP}
+        else if(!P2)                                   cpuA_Din <= {1'b1,PLAYER2[3],PLAYER2[2],PLAYER2[4],PLAYER2[11],PLAYER2[10],PLAYER2[12],PLAYER2[13]}; //Player2 inputs:{UNK,MISSILE,SHOT,ARMOR,RIGHT,LEFT,DOWN,UP}
         else if(!P1_P2)                                cpuA_Din <= 8'hFF;
         else if(!DIP1)                                 cpuA_Din <= DSW[7:0]; //8'b1001_1100; //DSW[7:0]; //DIP1 Switches 
         else if(!DIP2)                                 cpuA_Din <= DSW[15:8]; //8'b1111_0111; //DSW[15:8];//DIP2 Switches
@@ -307,8 +322,8 @@ module AlphaMissionCore_CPU_A_B_sync
         T80pa z80_E1 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        .CEN_p  (Cen_p & ~pause_cpu), //active high
-        .CEN_n  (Cen_n & ~pause_cpu), //active high
+        .CEN_p  (Cen_pr1 & ~pause_cpu), //active high
+        .CEN_n  (Cen_nr1 & ~pause_cpu), //active high
         //.WAIT_n (BWA | ~pause_cpu),
         .WAIT_n (BWA),
         .INT_n  (cpuB_nINT),
@@ -349,7 +364,12 @@ module AlphaMissionCore_CPU_A_B_sync
 
     assign C4_1_OR = |cpuB_A[13:12];
     assign C6_4_NOR = ~(C4_1_OR | cpuB_A[11]);
-    assign BE_addr = C6_4_NOR | C5_2_Y3n; 
+     //add one clock delay
+    logic c6nor4_r;
+    always @(posedge clk) begin
+        c6nor4_r <= C6_4_NOR;
+    end
+    assign BE_addr = c6nor4_r | C5_2_Y3n; 
     assign BE = ~(BE_addr | cpuB_nMR); //C6_3_NOR;
     //-----------------
 

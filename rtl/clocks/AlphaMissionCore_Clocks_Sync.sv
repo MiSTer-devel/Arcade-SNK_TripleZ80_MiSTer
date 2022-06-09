@@ -485,7 +485,6 @@ module AlphaMissionCore_Clocks_Sync(
 
     assign G15_BE_CK = ~(AB_Sel  & G15_CE); //AB_Sel=1 B
 
-
     //*************************************************
     //*** CPU A & B AND VIDEO RAM CONTROL SIGNALS   ***
     //*************************************************
@@ -498,6 +497,7 @@ module AlphaMissionCore_Clocks_Sync(
         .Cen(CK0), 
         .F15_BE_Qn(F15_BE_Qn), //BE
         .C3A_Q(C3_1_Q), 
+        .C3A_Qn(C3_1_Qn), 
         .F15_AE_Qn(F15_AE_Qn), //AE
         .A15_QA(a15_qa), 
         .A15_QB(a15_qb), 

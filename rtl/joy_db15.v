@@ -20,7 +20,7 @@ reg [15:0] joy1  = 16'hFFFF, joy2  = 16'hFFFF;
 reg joy_renew = 1'b1;
 reg [4:0]joy_count = 5'd0;
    
-assign JOY_CLK = JCLOCKS[3]; //con 3 Funciona = 3Mhz
+assign JOY_CLK = JCLOCKS[4]; //con 3 Funciona = 3Mhz
 assign JOY_LOAD = joy_renew;
 always @(posedge JOY_CLK) begin 
     if (joy_count == 5'd0) begin
@@ -62,6 +62,8 @@ always @(posedge JOY_CLK) begin
         5'd25 : joy2[4]  <= JOY_DATA;  //  P2 A
     endcase              
 end
+//    11 
+//    10 9876543210
 //----LS FEDCBAUDLR
 assign joystick1[15:0] = ~joy1;
 assign joystick2[15:0] = ~joy2;

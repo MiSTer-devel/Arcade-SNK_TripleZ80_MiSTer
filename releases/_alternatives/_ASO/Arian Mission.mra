@@ -2,7 +2,7 @@
 	<name>Arian Mission</name>
 	<mameversion>0193</mameversion>
 	<setname>arian</setname>
-	<mratimestamp>20220515</mratimestamp>
+	<mratimestamp>20220609</mratimestamp>
 	<year>1985</year>
 	<manufacturer>SNK</manufacturer>
 	<category>Shooter / Flying Vertical</category>
@@ -73,5 +73,5 @@
 		<part>00</part>
 	</rom>
 
-<buttons default="A,B,C,Start,R,L,X,Y" names="Fire,Missile,Armor,Start1,Coin,Pause,Service,Start2"></buttons>
+<buttons default="A,B,C,Start,,X,Y,Z" names="Fire,Missile,Armor,Start,Coin,Pause,Service"></buttons>
 </misterromdescription>

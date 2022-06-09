@@ -1,3 +1,4 @@
+set_global_assignment -name VERILOG_FILE rtl/joy_db15.v
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ttl/n9bit_counter.sv
 set_global_assignment -name VERILOG_FILE rtl/joy_10btn.v
 set_global_assignment -name VERILOG_FILE rtl/ttl/helper.v

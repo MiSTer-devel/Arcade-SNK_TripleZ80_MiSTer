@@ -13,6 +13,7 @@ module pal16r6_15B_sync (
     F15_BE_Qn, //2 
     C3A_Q, //3
     F15_AE_Qn,  //4
+    C3A_Qn,  //5 
     A15_QA, //6
     A15_QB, //7
     A15_QC, //8
@@ -29,6 +30,7 @@ module pal16r6_15B_sync (
     input wire Cen;
     input wire F15_BE_Qn;
     input wire C3A_Q;
+    input wire C3A_Qn;
     input wire F15_AE_Qn;
     input wire A15_QA;
     input wire A15_QB;
@@ -52,9 +54,13 @@ module pal16r6_15B_sync (
     assign  A15_QBn = ~A15_QB;
     assign  F15_AE_Q = ~F15_AE_Qn; //fix temporal, check and delete this
 
-    assign  PLOAD_RSHIFTn = ~((F15_BE_Qn &      F15_AE_Qn & A15_QCn & rV_Cneg) |
-                              (                             A15_QCn & rV_Cn  ) |
-                              (F15_BE_Qn &      F15_AE_Qn & C3A_Q            ));
+    // assign  PLOAD_RSHIFTn = ~((F15_BE_Qn &      F15_AE_Qn & A15_QCn & rV_Cneg) |
+    //                           (                             A15_QCn & rV_Cn  ) |
+    //                           (F15_BE_Qn &      F15_AE_Qn & C3A_Q            ));
+    assign  PLOAD_RSHIFTn = ~((                                       A15_QCn & rV_Cn) |
+                              (F15_BE_Qn &      F15_AE_Qn &           C3A_Q          ) |
+                              (F15_BE_Qn &      F15_AE_Qn &           A15_QCn        ) |
+                              (F15_BE_Qn &      F15_AE_Qn & C3A_Q   & rV_Cn          ));
 
     //------------------------------------------------------
     assign  term14 = A15_QBn & rV_Cn;
@@ -93,7 +99,7 @@ module pal16r6_15B_sync (
     assign  RL_Sel = ~rRL_Sel;
 
     //------------------------------------------------------
-    assign  term16 = A15_QA & A15_QBn & rV_Cneg; //FIXED
+    assign  term16 = C3A_Qn & A15_QA & A15_QBn & rV_Cneg; //FIXED
 
     assign  rVLKn = ~rVLK;
     assign  rVLKneg = ~rVLKn;
