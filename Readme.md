@@ -29,7 +29,7 @@ The required ROM files follow the MAME naming conventions (check inside MRA for 
 /media/fat/_Arcade/mame/<mame rom>.zip
 
 ## Acknowledgments
-* To all Ko-fi contributors for supporting this project: @bdlou, Peter Bray, Nat, Funkycochise, David, Kevin Coleman, Denymetanol, Schermobianco, TontonKaloun, Wark91, Dan, Beaps.
+* To all Ko-fi contributors for supporting this project: __@bdlou__, __Peter Bray__, __Nat__, __Funkycochise__, __David__, __Kevin Coleman__, __Denymetanol__, __Schermobianco__, __TontonKaloun__, __Wark91__, __Dan__, __Beaps__.
 * __@caiusarcade__ for their assistance in using files and converting PLD files.
 * __@topapate__ for general advice with the JTOPL core.
 * __@FCochise__ for helping with the rom settings of MRA files.
