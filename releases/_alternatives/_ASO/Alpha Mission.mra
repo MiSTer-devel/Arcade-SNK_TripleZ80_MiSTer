@@ -2,7 +2,7 @@
 	<name>Alpha Mission</name>
 	<mameversion>0193</mameversion>
 	<setname>alphamis</setname>
-	<mratimestamp>20220609</mratimestamp>
+	<mratimestamp>20220715</mratimestamp>
 	<year>1985</year>
 	<manufacturer>SNK</manufacturer>
 	<category>Shooter / Flying Vertical</category>
@@ -73,5 +73,5 @@
 		<part>00</part>
 	</rom>
 
-<buttons default="A,B,C,Start,,X,Y,Z" names="Fire,Missile,Armor,Start,Coin,Pause,Service"></buttons>
+<buttons default="A,B,C,Start,R,L,X" names="Fire,Missile,Armor,Start,Coin,Pause,Service"></buttons>
 </misterromdescription>

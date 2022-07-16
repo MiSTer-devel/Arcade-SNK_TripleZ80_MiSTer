@@ -2,7 +2,7 @@
 	<name>ASO - Armored Scrum Object</name>
 	<mameversion>0193</mameversion>
 	<setname>aso</setname>
-	<mratimestamp>20220609</mratimestamp>
+	<mratimestamp>20220515</mratimestamp>
 	<year>1985</year>
 	<manufacturer>SNK</manufacturer>
 	<category>Shooter / Flying Vertical</category>
@@ -75,5 +75,5 @@
 		<part>00</part>
 	</rom>
 	
-<buttons default="A,B,C,Start,,X,Y,Z" names="Fire,Missile,Armor,Start,Coin,Pause,Service"></buttons>
+<buttons default="A,B,C,Start,R,L,X" names="Fire,Missile,Armor,Start,Coin,Pause,Service"></buttons>
 </misterromdescription>

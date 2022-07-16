@@ -156,7 +156,7 @@ module AlphaMissionCore_Clocks_Sync(
     logic c9q1_n;
     assign c9q1_n = ~C9_Q[1];
     assign d8 = HCNT_CK1 & C10_Q[2] & C9_Q[3]; //3-input AND
-    assign HLDn = ~(d8 & c9q1_n & C9_Q[2] & C10_Q[0]); //C7b 
+    assign HLDn = ~(d8 & c9q1_n & C9_Q[2] & C10_Q[1]); //C7b  FIXED C10_Q[0] -> C10_Q[1]
 
     ttl_74175_sync b7
     ( 
