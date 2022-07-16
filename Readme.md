@@ -1,4 +1,7 @@
 # SNK Triple Z80 Arcade Core (WIP)
+![SNK logo](/docs/snk_corp_logo.png)
+![Game Flyer](/docs/ASO_logo.jpg)
+
 Follow any core updates and news on my Twitter acount [@RndMnkIII](https://twitter.com/RndMnkIII). this project is a hobby but it requires investing in arcade game boards and specific tools, so any donation is welcome: [https://ko-fi.com/rndmnkiii](https://ko-fi.com/rndmnkiii).
 
 ## About
@@ -15,16 +18,18 @@ While it is in this development process, it will be appreciated that parallel de
 * Based on Tim Rudy 7400 TTL library [https://github.com/TimRudy/ice-chips-verilog](https://github.com/TimRudy/ice-chips-verilog).
 ## Instructions ASO/Alpha Mission/Arian Mission:
 In a game of two players who play in alternating turns. 
-You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start1,Start2, Coin and Service mode. In MiSTer you have an additional button to pause the game (opening the OSD will be pause the game also).
-For enter in service mode you must hold pressed the service mode button while you reset the core. Not keyboard controls implemented yet.
+You use a 8-way joystick control with three buttons: Fire, Missile, Armor, Start, Coin and Service mode. In MiSTer you have an additional button to pause the game (opening the OSD will be pause the game also).
+For enter in service mode you must hold pressed the service mode button while you reset the core. Not keyboard controls implemented yet. You can configure a second gamepad for the 2nd player but both gamepads will share action buttons. Recomended gamepad button assignments:
+![gamepad buttons](/docs/gamepad_buttons_ASO.png)
 
 ## Manual installation
-Rename the Arcade-SNK_TripleZ80_20220509.rbf file to SNK_TripleZ80_20220509.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
+Rename the Arcade-SNK_TripleZ80_20220715.rbf file to SNK_TripleZ80_20220715.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
 
 The required ROM files follow the MAME naming conventions (check inside MRA for this). Is the user responsability to be installed in the following folder:
 /media/fat/_Arcade/mame/<mame rom>.zip
 
 ## Acknowledgments
+* To all Ko-fi contributors for supporting this project: @bdlou, Peter Bray, Nat, Funkycochise, David, Kevin Coleman, Denymetanol, Schermobianco, TontonKaloun, Wark91, Dan, Beaps.
 * __@caiusarcade__ for their assistance in using files and converting PLD files.
 * __@topapate__ for general advice with the JTOPL core.
 * __@FCochise__ for helping with the rom settings of MRA files.
