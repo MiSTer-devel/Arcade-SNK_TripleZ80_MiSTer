@@ -20,7 +20,7 @@ reg [15:0] joy1  = 16'hFFFF, joy2  = 16'hFFFF;
 reg joy_renew = 1'b1;
 reg [4:0]joy_count = 5'd0;
    
-assign JOY_CLK = JCLOCKS[4]; //con 3 Funciona = 3Mhz
+assign JOY_CLK = JCLOCKS[6]; //con 3 Funciona = 3Mhz
 assign JOY_LOAD = joy_renew;
 always @(posedge JOY_CLK) begin 
     if (joy_count == 5'd0) begin

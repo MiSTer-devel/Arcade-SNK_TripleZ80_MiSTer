@@ -227,7 +227,11 @@ localparam CONF_STR = {
 	"P2O[16],Side Layer,On,Off;",
 	"P2O[17],Back Layer,On,Off;",
 	"P2O[18],Front Layer,On,Off;",
-	"P2-;",,
+	"P2-;",
+	"P3,SNAC;",
+	"P3-;",
+	"P3O[21:20],DB15 Devices,Off,OnlyP1,OnlyP2,P1&P2;",
+	"P3-;",
 	"DIP;",
 	"-;",
 	"T[0],Reset;",
@@ -266,32 +270,34 @@ wire [10:0] ps2_key;
 wire [15:0] joystick_0, joystick_1;
 
 //SNAC joysticks
-// wire [1:0] SNAC_dev = status[20:19];
-// wire         JOY_CLK, JOY_LOAD;
-// wire         JOY_DATA  = (SNAC_dev == 2'd1) ? USER_IN[5] : '1;
+wire [1:0] SNAC_dev;	
+assign SNAC_dev = status[21:20];
+wire         JOY_CLK, JOY_LOAD;
+wire         JOY_DATA  = USER_IN[5];
 
-// always_comb begin
-// 	USER_OUT    = 8'hFF; 
+always_comb begin
+	USER_OUT[0] = JOY_LOAD;
+	USER_OUT[1] = JOY_CLK;
+	USER_OUT[2] = 1'b1;
+	USER_OUT[3] = 1'b1;
+	USER_OUT[4] = 1'b1;
+	USER_OUT[5] = 1'b1;
+	USER_OUT[6] = 1'b1;
+end
 
-// 	if ((SNAC_dev == 2'd1) || (SNAC_dev == 2'd2)) begin
-// 		USER_OUT[0] = JOY_LOAD;
-// 		USER_OUT[1] = JOY_CLK;
-// 	end 
-// end
+wire [15:0] JOY_DB1 = (SNAC_dev[0]) ? JOYDB15_1 : 16'd0;
+wire [15:0] JOY_DB2 = (SNAC_dev[1]) ? JOYDB15_2 : 16'd0;
 
-// wire [15:0] JOY_DB1 = (SNAC_dev == 2'd1) ? JOYDB15_1 : 16'd0;
-// wire [15:0] JOY_DB2 = (SNAC_dev == 2'd2) ? JOYDB15_2 : 16'd0;
-
-// wire [15:0] JOYDB15_1,JOYDB15_2;
-// joy_db15 joy_db15
-// (
-//   .clk       ( clk_53p6  ), //53.6MHz
-//   .JOY_CLK   ( JOY_CLK   ),
-//   .JOY_DATA  ( JOY_DATA  ),
-//   .JOY_LOAD  ( JOY_LOAD  ),
-//   .joystick1 ( JOYDB15_1 ),
-//   .joystick2 ( JOYDB15_2 )	  
-// );
+wire [15:0] JOYDB15_1,JOYDB15_2;
+joy_db15 joy_db15
+(
+  .clk       ( clk_53p6  ), //53.6MHz
+  .JOY_CLK   ( JOY_CLK   ),
+  .JOY_DATA  ( JOY_DATA  ),
+  .JOY_LOAD  ( JOY_LOAD  ),
+  .joystick1 ( JOYDB15_1 ),
+  .joystick2 ( JOYDB15_2 )	  
+);
 
 hps_io #(.CONF_STR(CONF_STR)) hps_io
 (
@@ -494,29 +500,29 @@ wire m_pause2; //active high
 //    10 9876543210
 //----LS FEDCBAUDLR
 
-	assign m_up1       = ~joystick_0[3];
-	assign m_down1     = ~joystick_0[2];
-	assign m_left1     = ~joystick_0[1];
-	assign m_right1    = ~joystick_0[0];
-	assign m_shot1     = ~joystick_0[4];  
-	assign m_missile1  = ~joystick_0[5]; 
-	assign m_armor1    = ~joystick_0[6];   
-	assign m_start1    = ~joystick_0[7];  
-	assign m_coin1     = ~joystick_0[8];  
-	assign m_service1  = ~joystick_0[9];
-	assign m_pause1    =  joystick_0[10]; //active high
+	assign m_up1       = (SNAC_dev[0]) ? ~JOY_DB1[3]  : ~joystick_0[3];
+	assign m_down1     = (SNAC_dev[0]) ? ~JOY_DB1[2]  : ~joystick_0[2];
+	assign m_left1     = (SNAC_dev[0]) ? ~JOY_DB1[1]  : ~joystick_0[1];
+	assign m_right1    = (SNAC_dev[0]) ? ~JOY_DB1[0]  : ~joystick_0[0];
+	assign m_shot1     = (SNAC_dev[0]) ? ~JOY_DB1[4]  : ~joystick_0[4]; //DB15 (NeoGeo): A 
+	assign m_missile1  = (SNAC_dev[0]) ? ~JOY_DB1[5]  : ~joystick_0[5]; //DB15 (NeoGeo): B
+	assign m_armor1    = (SNAC_dev[0]) ? ~JOY_DB1[6]  : ~joystick_0[6]; //DB15 (NeoGeo): C
+	assign m_start1    = (SNAC_dev[0]) ? ~JOY_DB1[10] : ~joystick_0[7]; //DB15 (NeoGeo): Start
+	assign m_coin1     = (SNAC_dev[0]) ? ~JOY_DB1[11] : ~joystick_0[8]; //DB15 (NeoGeo): Select 
+	assign m_service1  = (SNAC_dev[0]) ?  ~(JOY_DB1[5] & JOY_DB1[11]) : ~joystick_0[9]; //DB15 (NeoGeo): Select+B
+	assign m_pause1    = (SNAC_dev[0]) ?   (JOY_DB1[4] & JOY_DB1[11]) :  joystick_0[10]; //DB15 (NeoGeo): Select+A
 	
-	assign m_up2       = ~joystick_1[3];
-	assign m_down2     = ~joystick_1[2];
-	assign m_left2     = ~joystick_1[1];
-	assign m_right2    = ~joystick_1[0];
-	assign m_shot2     = ~joystick_1[4];  
-	assign m_missile2  = ~joystick_1[5]; 
-	assign m_armor2    = ~joystick_1[6];   
-	assign m_start2    = ~joystick_1[7];  
-	assign m_coin2     = ~joystick_1[8];  
-	assign m_service2  = ~joystick_1[9];
-	assign m_pause2    =  joystick_1[10]; //active high
+	assign m_up2       = (SNAC_dev[1]) ? ~JOY_DB2[3]  : ~joystick_1[3];
+	assign m_down2     = (SNAC_dev[1]) ? ~JOY_DB2[2]  : ~joystick_1[2];
+	assign m_left2     = (SNAC_dev[1]) ? ~JOY_DB2[1]  : ~joystick_1[1];
+	assign m_right2    = (SNAC_dev[1]) ? ~JOY_DB2[0]  : ~joystick_1[0];
+	assign m_shot2     = (SNAC_dev[1]) ? ~JOY_DB2[4]  : ~joystick_1[4]; //DB15 (NeoGeo): A 
+	assign m_missile2  = (SNAC_dev[1]) ? ~JOY_DB2[5]  : ~joystick_1[5]; //DB15 (NeoGeo): B
+	assign m_armor2    = (SNAC_dev[1]) ? ~JOY_DB2[6]  : ~joystick_1[6]; //DB15 (NeoGeo): C
+	assign m_start2    = (SNAC_dev[1]) ? ~JOY_DB2[10] : ~joystick_1[7]; //DB15 (NeoGeo): Start
+	assign m_coin2     = (SNAC_dev[1]) ? ~JOY_DB2[11] : ~joystick_1[8]; //DB15 (NeoGeo): Select 
+	assign m_service2  = (SNAC_dev[1]) ?  ~(JOY_DB2[5] & JOY_DB2[11]) : ~joystick_1[9]; //DB15 (NeoGeo): Select+B
+	assign m_pause2    = (SNAC_dev[1]) ?   (JOY_DB2[4] & JOY_DB2[11]) :  joystick_1[10]; //DB15 (NeoGeo): Select+A
 
 assign PLAYER1 = {2'b11,m_up1,m_down1,m_right1,m_left1,m_service1,4'b1111, m_armor1,m_missile1,m_shot1,m_start1,m_coin1};
 assign PLAYER2 = {2'b11,m_up2,m_down2,m_right2,m_left2,m_service2,4'b1111, m_armor1,m_missile1,m_shot1,m_start1,m_coin1};
