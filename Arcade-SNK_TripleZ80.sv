@@ -50,6 +50,7 @@ module emu
 	output        VGA_F1,
 	output [1:0]  VGA_SL,
 	output        VGA_SCALER, // Force VGA scaler
+	output 		  VGA_DISABLE,
 
 	input  [11:0] HDMI_WIDTH,
 	input  [11:0] HDMI_HEIGHT,
@@ -184,6 +185,7 @@ assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQM
 assign VGA_F1 = 0;
 assign VGA_SCALER = status[14];
 assign HDMI_FREEZE = 0;
+assign VGA_DISABLE = 0;
 
 //assign LED_DISK = 0;
 //assign LED_POWER = 0;
