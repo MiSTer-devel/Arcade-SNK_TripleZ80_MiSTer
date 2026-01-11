@@ -222,7 +222,7 @@ localparam CONF_STR = {
     "P1-;",
     "P1O[9:8],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"P1O[10],Orientation,Horz.,Vert.;",
-	"P1O[11],Rotate CCW,Off,On;",
+	"P1O[11],Rotate CW,Off,On;",
 	"P1O[6:4],Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",
 	"-;",
@@ -353,7 +353,7 @@ pause #(8,8,8,536) pause (
 );
 
 // Video rotation 
-wire rotate_ccw = status[11];
+wire rotate_ccw = ~status[11];
 wire no_rotate = orientation | direct_video;
 wire video_rotated;
 wire flip = status[15];
@@ -471,7 +471,7 @@ end
 
 logic [7:0] dsw1, dsw2;
 assign dsw1 = sw[0];
-assign dsw2 = sw[1];
+assign dsw2 = {sw[1][7:6], ~sw[1][5], sw[1][4:0]};
 //Keyboard
 
 //Joysticks
